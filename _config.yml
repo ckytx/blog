@@ -79,5 +79,5 @@ theme: icarus
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://git.dev.tencent.com/cky/cky.coding.me.git
-  branch: coding-pages
+  repo: https://github_token@github.com/cuikangyi/blog.git
+  branch: gh-pages
