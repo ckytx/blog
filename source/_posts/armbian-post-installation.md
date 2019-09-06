@@ -1,6 +1,7 @@
 ---
 title: Armbian的常用配置
 date: 2019-09-04 11:29:27
+updated: 2019-09-06 10:39:10
 tags:
   - armbian
   - n1
@@ -48,23 +49,11 @@ sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="ys"/' ~/.zshrc
 ```
 ### usb自动挂载
 ```
-# 创建udev规则
-tee /etc/udev/rules.d/10-usb-mount.rules <<-'EOF'
-KERNEL!="sd*", GOTO="exit"
-SUBSYSTEM!="block", GOTO="exit"
-IMPORT{builtin}="blkid"
-ENV{ID_FS_LABEL}=="EFI|BOOT|Recovery|RECOVERY|SETTINGS|boot|root0|share0", GOTO="exit"
-ENV{DEVTYPE}!="partition", GOTO="exit"
-ENV{ID_FS_USAGE}!="filesystem", GOTO="exit"
-ENV{ID_FS_LABEL}!="", ENV{dir_name}="%E{ID_FS_LABEL}"
-ENV{ID_FS_LABEL}=="", ENV{dir_name}="Untitled-%k"
-ACTION=="add", PROGRAM="/bin/sh -c '/bin/grep -E ^/dev/%k\  /proc/mounts || true'", RESULT=="", RUN+="/usr/bin/systemd-mount --no-block --automount=yes --collect /dev/%k /media/%E{dir_name}"
-ACTION=="remove", ENV{dir_name}!="", RUN+="/usr/bin/systemd-mount --umount /media/%E{dir_name}", RUN+="/bin/rmdir /media/%E{dir_name}"
-LABEL="exit"
-EOF
-
-#执行命令重新加载配置
-udevadm control --reload
+apt-get install -y udevil
+# 修改默认挂载路径到/media
+sed -i 's/allowed_media_dirs\ =\ \/media\/$USER,\ \/run\/media\/$USER/allowed_media_dirs\ =\ \/media,\ \/media\/$USER,\ \/run\/media\/$USER/' /etc/udevil/udevil.conf
+systemctl start devmon@your-username.service
+systemctl enable devmon@your-username.service
 ```
 
 ### 安装docker
