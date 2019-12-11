@@ -1,0 +1,37 @@
+name: Hexo Auto-Deploy
+
+on:
+  push:
+    branches:
+      - hexo
+
+jobs:
+  build:
+    name: Hexo Auto-Deploy by GitHub Actions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. git checkout...
+        uses: actions/checkout@v1
+
+      - name: 2. setup nodejs...
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+
+      - name: 3. install hexo...
+        run: |
+          npm install hexo-cli -g
+          npm install
+
+      - name: 4. config...
+        run: |
+          git config --global user.name "cuikangyi"
+          git config --global user.email "cuikangyi@gmail.com"
+          sed -i "s/github_token/${{ secrets.GH_TOKEN }}/g" _config.yml
+
+      - name: 5. deploy...
+        run: |
+          hexo clean
+          hexo generate
+          hexo deploy
