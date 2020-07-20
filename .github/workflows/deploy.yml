@@ -1,4 +1,4 @@
-name: Hexo Auto-Deploy
+name: Hexo Blog
 
 on:
   push:
@@ -7,30 +7,38 @@ on:
 
 jobs:
   build:
-    name: Hexo Auto-Deploy by GitHub Actions
     runs-on: ubuntu-latest
 
     steps:
-      - name: 1. git checkout...
-        uses: actions/checkout@v1
+      - name: Checkout Repository
+        uses: actions/checkout@master
 
-      - name: 2. setup nodejs...
-        uses: actions/setup-node@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@master
         with:
           node-version: 10.x
 
-      - name: 3. install hexo...
+      - name: Setup Hexo
         run: |
           npm install hexo-cli -g
           npm install
 
-      - name: 4. config...
+      - name: Setup Deploy Key
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          git config --global user.name "cuikangyi"
-          git config --global user.email "cuikangyi@gmail.com"
-          sed -i "s/github_token/${{ secrets.GH_TOKEN }}/g" _config.yml
+          mkdir -p ~/.ssh/
+          echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-keyscan e.coding.net >> ~/.ssh/known_hosts
 
-      - name: 5. deploy...
+      - name: Setup Git Identity
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Deploy
         run: |
           hexo clean
           hexo generate

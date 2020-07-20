@@ -78,6 +78,7 @@ theme: icarus
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
-  repo: https://github_token@github.com/cuikangyi/blog.git
-  branch: gh-pages
+  - type: git
+    repo:
+      github: git@github.com:cuikangyi/blog.git,gh-pages
+      coding: git@e.coding.net:cky/blog/blog.git,coding-pages
