@@ -1,0 +1,43 @@
+name: hugo
+
+on:
+  push:
+    branches:
+      - hugo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+        with:
+          submodules: true
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: 'latest'
+
+      - name: Build
+        run: hugo --minify
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.DEPLOY_KEY }}
+          publish_dir: ./public
+          force_orphan: true
+
+      - name: Deploy to coding
+        run: |
+          ssh-keyscan e.coding.net >> ~/.ssh/known_hosts
+          cd public
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git init
+          git add -A
+          git commit -m "deploy"
+          git remote add coding git@e.coding.net:cky/blog/blog.git
+          git push --force --set-upstream coding master:coding-pages
