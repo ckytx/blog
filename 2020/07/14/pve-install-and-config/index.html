@@ -1,0 +1,115 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>ProxmoxVE 安装及相关配置 - cky</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="cky"><meta name=description content><meta name=generator content="Hugo 0.74.3 with theme even"><link rel=canonical href=https://921013.xyz/2020/07/14/pve-install-and-config/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="ProxmoxVE 安装及相关配置"><meta property="og:description" content><meta property="og:type" content="article"><meta property="og:url" content="https://921013.xyz/2020/07/14/pve-install-and-config/"><meta property="article:published_time" content="2020-07-14T17:36:06+08:00"><meta property="article:modified_time" content="2020-07-14T17:36:06+08:00"><meta itemprop=name content="ProxmoxVE 安装及相关配置"><meta itemprop=description content><meta itemprop=datePublished content="2020-07-14T17:36:06+08:00"><meta itemprop=dateModified content="2020-07-14T17:36:06+08:00"><meta itemprop=wordCount content="535"><meta itemprop=keywords content="proxmox-ve,"><meta name=twitter:card content="summary"><meta name=twitter:title content="ProxmoxVE 安装及相关配置"><meta name=twitter:description content><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>cky</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>cky</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>ProxmoxVE 安装及相关配置</h1><div class=post-meta><span class=post-time>2020-07-14</span><div class=post-category><a href=/categories/proxmox-ve/>proxmox-ve</a>
+<a href=/categories/linux/>linux</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#分区>分区</a></li><li><a href=#替换源>替换源</a></li><li><a href=#去除登录时订阅通知>去除登录时订阅通知</a></li><li><a href=#开启pveproxy-ipv6支持>开启pveproxy ipv6支持</a></li><li><a href=#卸载旧内核>卸载旧内核</a></li><li><a href=#硬盘无法休眠>硬盘无法休眠</a></li></ul></li></ul></nav></div></div><div class=post-content><h3 id=分区>分区</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback># 安装过程就不详细叙述了，只记录下分区情况
+# 分区大小
+swapsize 4
+maxroot 20
+minfree 0
+</code></pre></td></tr></table></div></div><h3 id=替换源>替换源</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>tee /etc/apt/sources.list <span class=s>&lt;&lt;-&#39;EOF&#39;
+</span><span class=s>deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+</span><span class=s># deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+</span><span class=s>deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+</span><span class=s># deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+</span><span class=s>deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+</span><span class=s># deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+</span><span class=s>deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+</span><span class=s># deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+</span><span class=s>EOF</span>
+
+tee /etc/apt/sources.list.d/pve-enterprise.list <span class=s>&lt;&lt;-&#39;EOF&#39;
+</span><span class=s># deb https://enterprise.proxmox.com/debian/pve buster pve-no-subscription
+</span><span class=s>deb https://mirrors.tuna.tsinghua.edu.cn/proxmox/debian buster pve-no-subscription
+</span><span class=s>EOF</span>
+
+apt update <span class=o>&amp;&amp;</span> apt dist-upgrade -y
+</code></pre></td></tr></table></div></div><h3 id=去除登录时订阅通知>去除登录时订阅通知</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>sed -i.bak <span class=s2>&#34;s/data.status !== &#39;Active&#39;/false/g&#34;</span> /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+</code></pre></td></tr></table></div></div><h3 id=开启pveproxy-ipv6支持>开启pveproxy ipv6支持</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash>sed -i.bak  -r <span class=s2>&#34;s/(.*pve)/::ffff:\1/&#34;</span> /etc/hosts
+systemctl restart pveproxy
+<span class=c1># 检测</span>
+<span class=c1># netstat -anlpt | grep 8006 # 需要安装net-tools</span>
+<span class=c1># curl -vk &#34;https://127.0.0.1:8006&#34; 2&gt;&amp;1 | grep &#34;OK&#34;</span>
+<span class=c1># curl -vk &#34;https://[::1]:8006&#34; 2&gt;&amp;1 | grep &#34;OK&#34;</span>
+</code></pre></td></tr></table></div></div><h3 id=卸载旧内核>卸载旧内核</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># !!!谨慎操作!!!</span>
+<span class=c1># 先重启加载新内核再卸载</span>
+
+dpkg -l <span class=p>|</span> <span class=se>\
+</span><span class=se></span>grep ii <span class=p>|</span> <span class=se>\
+</span><span class=se></span>awk <span class=s1>&#39;{print $2}&#39;</span> <span class=p>|</span> <span class=se>\
+</span><span class=se></span>grep -E <span class=s1>&#39;pve-kernel(.+)-pve&#39;</span> <span class=p>|</span> <span class=se>\
+</span><span class=se></span>grep -v <span class=k>$(</span>uname -r<span class=k>)</span> <span class=p>|</span> <span class=se>\
+</span><span class=se></span>xargs apt-get purge -y
+</code></pre></td></tr></table></div></div><h3 id=硬盘无法休眠>硬盘无法休眠</h3><p>由于pvestatd进程一直都再扫描硬盘所以导致硬盘无法正常休眠，可以修改如下配置让pvestatd只检测特定的硬盘</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-bash data-lang=bash><span class=c1># /etc/lvm/lvm.conf</span>
+...
+<span class=nv>global_filter</span> <span class=o>=</span> <span class=o>[</span> <span class=s2>&#34;r|/dev/zd.*|&#34;</span>, <span class=s2>&#34;r|/dev/mapper/pve-.*|&#34;</span> <span class=s2>&#34;r|/dev/mapper/.*-(vm|base)--[0-9]+--disk--[0-9]+|&#34;</span><span class=o>]</span>
+...
+
+<span class=c1># 添加以下内容到 global_filter 数组前面</span>
+<span class=c1># 将/dev/disk/by-id/YOUR_SYSTEM_DISK*替换为你的系统盘，当sdX不确定的情况下最好使用硬盘id或uuid等来确定硬盘</span>
+<span class=c1># 这样即可让pvestat监测系统盘，忽略所有的sd*和md*</span>
+<span class=s2>&#34;a|/dev/disk/by-id/YOUR_SYSTEM_DISK*|&#34;</span>, <span class=s2>&#34;r|/dev/sd.*|&#34;</span>, <span class=s2>&#34;r|/dev/md.*|&#34;</span>,
+
+<span class=c1># 最后重启pvestatd，现在就可以使用hdparm或者hd-idle配置自动休眠</span>
+pvestatd restart
+</code></pre></td></tr></table></div></div></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>cky</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2020-07-14</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/proxmox-ve/>proxmox-ve</a></div><nav class=post-nav><a class=prev href=/2020/07/28/ffmpeg-transcode/><i class="iconfont icon-left"></i><span class="prev-text nav-default">FFmpeg视频转码</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/2019/09/04/armbian-post-installation/><span class="next-text nav-default">Armbian的常用配置</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/cuikangyi class="iconfont icon-github" title=github></a><a href=https://921013.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2017 -
+2020
+<span class=heart><i class="iconfont icon-heart"></i></span><span class=author>cky</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script type=text/javascript src=/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js></script></body></html>

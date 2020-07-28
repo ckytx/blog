@@ -1,0 +1,167 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge,chrome=1"><title>Lumen中启用session - cky</title><meta name=renderer content="webkit"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><meta http-equiv=cache-control content="no-transform"><meta http-equiv=cache-control content="no-siteapp"><meta name=theme-color content="#f8f5ec"><meta name=msapplication-navbutton-color content="#f8f5ec"><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec"><meta name=author content="cky"><meta name=description content="Lumen默认没有启用了session的支持，但是我们可以自己添加session功能，这一切都得益于强大的Laravel及Composer。"><meta name=generator content="Hugo 0.74.3 with theme even"><link rel=canonical href=https://921013.xyz/2017/06/02/enable-lumen-session/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/manifest.json><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link href=/sass/main.min.8c3cbcb0324c2bb4875ceccba4007cbad4b4ac8377f33af9953c3e7684534a50.css rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous><meta property="og:title" content="Lumen中启用session"><meta property="og:description" content="Lumen默认没有启用了session的支持，但是我们可以自己添加session功能，这一切都得益于强大的Laravel及Composer。"><meta property="og:type" content="article"><meta property="og:url" content="https://921013.xyz/2017/06/02/enable-lumen-session/"><meta property="article:published_time" content="2017-06-02T08:55:18+08:00"><meta property="article:modified_time" content="2017-06-02T08:55:18+08:00"><meta itemprop=name content="Lumen中启用session"><meta itemprop=description content="Lumen默认没有启用了session的支持，但是我们可以自己添加session功能，这一切都得益于强大的Laravel及Composer。"><meta itemprop=datePublished content="2017-06-02T08:55:18+08:00"><meta itemprop=dateModified content="2017-06-02T08:55:18+08:00"><meta itemprop=wordCount content="1287"><meta itemprop=keywords content="lumen,"><meta name=twitter:card content="summary"><meta name=twitter:title content="Lumen中启用session"><meta name=twitter:description content="Lumen默认没有启用了session的支持，但是我们可以自己添加session功能，这一切都得益于强大的Laravel及Composer。"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script><script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]--></head><body><div id=mobile-navbar class=mobile-navbar><div class=mobile-header-logo><a href=/ class=logo>cky</a></div><div class=mobile-navbar-icon><span></span><span></span><span></span></div></div><nav id=mobile-menu class="mobile-menu slideout-menu"><ul class=mobile-menu-list><a href=/><li class=mobile-menu-item>Home</li></a><a href=/post/><li class=mobile-menu-item>Archives</li></a><a href=/tags/><li class=mobile-menu-item>Tags</li></a><a href=/categories/><li class=mobile-menu-item>Categories</li></a></ul></nav><div class=container id=mobile-panel><header id=header class=header><div class=logo-wrapper><a href=/ class=logo>cky</a></div><nav class=site-navbar><ul id=menu class=menu><li class=menu-item><a class=menu-item-link href=/>Home</a></li><li class=menu-item><a class=menu-item-link href=/post/>Archives</a></li><li class=menu-item><a class=menu-item-link href=/tags/>Tags</a></li><li class=menu-item><a class=menu-item-link href=/categories/>Categories</a></li></ul></nav></header><main id=main class=main><div class=content-wrapper><div id=content class=content><article class=post><header class=post-header><h1 class=post-title>Lumen中启用session</h1><div class=post-meta><span class=post-time>2017-06-02</span><div class=post-category><a href=/categories/laravel/>laravel</a>
+<a href=/categories/lumen/>lumen</a></div></div></header><div class=post-toc id=post-toc><h2 class=post-toc-title>文章目录</h2><div class="post-toc-content always-active"><nav id=TableOfContents><ul><li><ul><li><a href=#注册sessionserviceprovider>注册SessionServiceProvider</a></li><li><a href=#添加session相关配置所需配置>添加session相关配置所需配置</a></li><li><a href=#注册startsession中间件>注册StartSession中间件</a></li><li><a href=#添加session别名>添加Session别名</a></li><li><a href=#使用session>使用session</a></li></ul></li></ul></nav></div></div><div class=post-content><p>Lumen默认没有启用了session的支持，但是我们可以自己添加session功能，这一切都得益于强大的Laravel及Composer。</p><blockquote><p>Lumen5.2 的Release Notes中官方明确的指出Lumen专注于构建无状态API，JSON API 服务，移除了session和view的支持，但其实view还是存在的，session确实真的被移除了</p></blockquote><p>因为项目需要所以我决定找回session，虽然官方建议需要session功能时可以使用强大的Laravel框架，但是对我小项目确实有点大材小用了。因为喜欢Laravel的优雅，所以我在小项目中都会把Lumen做为首选。</p><p>下面就来一步步找回“丢失”的session吧！</p><h3 id=注册sessionserviceprovider>注册SessionServiceProvider</h3><p>打开bootstrap/app.php，在相应位置添加注册SessionServiceProvider，代码如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// bootstrap/app.php
+// ...
+/*
+|--------------------------------------------------------------------------| 
+Register Service Providers
+|--------------------------------------------------------------------------|
+...
+|*/
+// ...
+// 注册 SessionServiceProvider
+$app-&gt;register(Illuminate\Session\SessionServiceProvider::class);
+// ...
+</code></pre></td></tr></table></div></div><h3 id=添加session相关配置所需配置>添加session相关配置所需配置</h3><p>同样在bootstrap/app.php中添加配置代码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// bootstrap/app.php
+// ...
+// 注册 SessionServiceProvider
+$app-&gt;register(Illuminate\Session\SessionServiceProvider::class);
+
+// 载入session相关配置
+$app-&gt;configure(&#39;session&#39;);
+</code></pre></td></tr></table></div></div><p>configure函数会从文件中加载配置，并绑定到container中，接下来只需要在项目根目录创建config文件夹，并新建session.php配置文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>&lt;?php
+// config/session.php
+// 这里直接从laravel中copy过来了，并且使用了file驱动，当然你也可以使用其他驱动，详细配置请查阅laravel官方文档
+return [
+    &#39;driver&#39; =&gt; env(&#39;SESSION_DRIVER&#39;, &#39;file&#39;),//默认使用file驱动，你可以在.env中配置
+    &#39;lifetime&#39; =&gt; 120,//缓存失效时间
+    &#39;expire_on_close&#39; =&gt; false,
+    &#39;encrypt&#39; =&gt; false,
+    &#39;files&#39; =&gt; storage_path(&#39;framework/session&#39;),//file缓存保存路径
+    &#39;connection&#39; =&gt; null,
+    &#39;table&#39; =&gt; &#39;sessions&#39;,
+    &#39;lottery&#39; =&gt; [2, 100],
+    &#39;cookie&#39; =&gt; &#39;laravel_session&#39;,
+    &#39;path&#39; =&gt; &#39;/&#39;,
+    &#39;domain&#39; =&gt; null,
+    &#39;secure&#39; =&gt; false,
+];
+</code></pre></td></tr></table></div></div><p>然后在storage/framework/下建立session文件夹用来存储session缓存，别忘了修改权限</p><h3 id=注册startsession中间件>注册StartSession中间件</h3><p>打开bootstrap/app.php，在Register Middleware位置修改</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// bootstrap/app.php
+// ...
+|--------------------------------------------------------------------------
+| Register Middleware
+|--------------------------------------------------------------------------
+// ...
+$app-&gt;middleware([
+    Illuminate\Session\Middleware\StartSession::class
+]);
+</code></pre></td></tr></table></div></div><h3 id=添加session别名>添加Session别名</h3><p>因为框架中使用了session别名，所以需要添加alias，不然会报错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// bootstrap/app.php
+// ...
+// 注册 SessionServiceProvider
+$app-&gt;register(Illuminate\Session\SessionServiceProvider::class);
+
+// 载入session相关配置
+$app-&gt;configure(&#39;session&#39;);
+
+// 设置session别名
+$app-&gt;alias(&#39;session&#39;, &#39;Illuminate\Session\SessionManager&#39;);
+</code></pre></td></tr></table></div></div><h3 id=使用session>使用session</h3><p>至此，你就可以在代码中使用session了，使用 app(&lsquo;session&rsquo;) 即可获取session实例，示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// 写入一条数据至 session 中...
+app(&#39;session&#39;)-&gt;put(&#39;key&#39;,&#39;value&#39;);
+
+// 获取session中键值未key的数据
+app(&#39;session&#39;)-&gt;get(&#39;key&#39;);
+</code></pre></td></tr></table></div></div><p>有关session的详细用法可查阅Laravel官方文档</p><p>ps：session辅助函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre class=chroma><code class=language-fallback data-lang=fallback>// session辅助函数
+if (! function_exists(&#39;session&#39;)) {
+    function session($key = null, $default = null)
+    {
+        $session = app(&#39;session&#39;);
+
+        if (is_null($key)) {
+            return $session;
+        }
+        if (is_array($key)) {
+            return $session-&gt;put($key);
+        }
+
+        return $session-&gt;get($key, $default);
+    }
+}
+</code></pre></td></tr></table></div></div><p>辅助函数可以让你更方便的使用session</p><p>End.</p><p>本文最初发布于我的简书：<a href=http://www.jianshu.com/p/dc33f8ab0618>http://www.jianshu.com/p/dc33f8ab0618</a></p></div><div class=post-copyright><p class=copyright-item><span class=item-title>文章作者</span>
+<span class=item-content>cky</span></p><p class=copyright-item><span class=item-title>上次更新</span>
+<span class=item-content>2017-06-02</span></p></div><footer class=post-footer><div class=post-tags><a href=/tags/lumen/>lumen</a></div><nav class=post-nav><a class=prev href=/2019/09/04/armbian-post-installation/><i class="iconfont icon-left"></i><span class="prev-text nav-default">Armbian的常用配置</span>
+<span class="prev-text nav-mobile">上一篇</span></a>
+<a class=next href=/2017/06/01/welcome/><span class="next-text nav-default">Welcome</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i></a></nav></footer></article></div></div></main><footer id=footer class=footer><div class=social-links><a href=https://github.com/cuikangyi class="iconfont icon-github" title=github></a><a href=https://921013.xyz/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a></div><div class=copyright><span class=power-by>由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动</span>
+<span class=division>|</span>
+<span class=theme-info>主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a></span>
+<span class=copyright-year>&copy;
+2017 -
+2020
+<span class=heart><i class="iconfont icon-heart"></i></span><span class=author>cky</span></span></div></footer><div class=back-to-top id=back-to-top><i class="iconfont icon-up"></i></div></div><script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script><script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script><script type=text/javascript src=/js/main.min.d7b7ada643c9c1a983026e177f141f7363b4640d619caf01d8831a6718cd44ea.js></script></body></html>
